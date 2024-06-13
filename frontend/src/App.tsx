@@ -1,8 +1,9 @@
 import { useState } from "react";
 
 import "./App.css";
-import { ProductList } from "./data";
+
 import { Col, Container, Nav, Navbar, Row } from "react-bootstrap";
+import { Outlet } from "react-router-dom";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -22,21 +23,8 @@ function App() {
       </header>
       <main>
         <Container className=" mt-3">
-          <Row>
-            {ProductList.map((eachItem, i) => {
-              return (
-                <Col className=" bg-info" key={i} sm={2} md={4} lg={3} >
-                  <img
-                    src={eachItem.image}
-                    className="product-image"
-                    alt="product"
-                  />
-                  <h2>{eachItem.name}</h2>
-                  <p>${eachItem.price}</p>
-                </Col>
-              );
-            })}
-          </Row>
+         
+          <Outlet/>
         </Container>
       </main>
       <footer>
