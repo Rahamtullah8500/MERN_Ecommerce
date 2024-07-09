@@ -1,27 +1,45 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import App from './App.tsx'
-import './index.css'
-import { createBrowserRouter,createRoutesFromElements,Route, RouterProvider } from 'react-router-dom'
-import { HomePage } from './pages/homePage/HomePage.tsx';
-import ProductPage from './pages/productPage/ProductPage.tsx'
-import { process } from './../../backend/node_modules/ipaddr.js/lib/ipaddr.js.d';
+import React from "react";
+import ReactDOM from "react-dom/client";
+// import "bootstrap/dist/css/bootstrap.min.css";
+import App from "./App.tsx";
+import "./index.css";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
+import { HomePage } from "./pages/homePage/HomePage.tsx";
+import ProductPage from "./pages/productPage/ProductPage.tsx";
+import axios from "axios";
+import { Provider } from "react-redux";
+import Store from "./redux/Store.tsx";
+import { HelmetProvider } from "react-helmet-async";
+import CartPage from './pages/cartPage/CartPage.tsx';
 
-let process:NodeJS.Process
-process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : '/'
+// let process:NodeJS.Process
+
+// process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : '/'
+
+axios.defaults.baseURL =
+  process.env.NODE_ENV === "development" ? "http://localhost:4000" : "/";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<App/>}>
-      <Route index={true} element={<HomePage/>} />
-      <Route path='product/:slug' element={<ProductPage/>}/>
+    <Route path="/" element={<App />}>
+      <Route index={true} element={<HomePage />} />
+      <Route path="product/:slug" element={<ProductPage />} />
+      <Route path="cart" element={<CartPage/>} />
     </Route>
   )
-)
+);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-   <RouterProvider router={router} />
-  </React.StrictMode>,
-)
+    <HelmetProvider>
+      <Provider store={Store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </HelmetProvider>
+  </React.StrictMode>
+);
