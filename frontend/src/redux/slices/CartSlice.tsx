@@ -1,4 +1,4 @@
-import { createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { Cart, CartItem } from "../../types/CartType";
 
 type AppState = {
@@ -53,12 +53,18 @@ const CartSlice = createSlice({
       }
       localStorage.setItem("cartItems", JSON.stringify(state.cart.cartItems));
     },
+    CART_REMOVE_ITEM: (state, action: { payload: CartItem }) => {
+      state.cart.cartItems = state.cart.cartItems.filter(
+        (item: CartItem) => item._id !== action.payload._id
+      );
+
+      localStorage.setItem("cartItems", JSON.stringify(state.cart.cartItems));
+
+      // return { ...state, cart: { ...state.cart, ...state.cart.cartItems } };
+    },
   },
 });
 
-export const { switchMode, addToCart } = CartSlice.actions;
+export const { switchMode, addToCart,CART_REMOVE_ITEM } = CartSlice.actions;
 
 export default CartSlice.reducer;
-
-// export type RootState = ReturnType<typeof store.getState>;
-// export type AppDispatch = typeof store.dispatch;

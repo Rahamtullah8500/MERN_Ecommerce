@@ -34,8 +34,6 @@ function ProductItem({ product }: { product: Product }) {
     toast.success('Product added to the cart')
   };
 
-  console.log('caritems 2',cartItems)
-
   return (
     <Card onClick={() => "handleFetchSelectedProduct(product.slug)"}>
       <Link to={`/product/${product.slug}`}>

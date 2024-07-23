@@ -13,8 +13,6 @@ productRouter.get(
   })
 );
 
-
-
 // /api/slug/tshirt
 productRouter.get(
   "/slug/:slug",

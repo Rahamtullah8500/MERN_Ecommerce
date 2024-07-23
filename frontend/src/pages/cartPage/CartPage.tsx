@@ -2,30 +2,34 @@ import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import { CartItem } from "../../types/CartType";
 import MessageBox from "../../components/messageBox/MessageBox";
-import { addToCart } from "../../redux/slices/CartSlice";
+import { addToCart, CART_REMOVE_ITEM } from "../../redux/slices/CartSlice";
 
 export default function CartPage() {
   const navigate = useNavigate();
   const { mode } = useSelector((state) => state.theme);
   const cartItems = useSelector((state) => state.cart.cart.cartItems);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const updateCartHandler = (item: CartItem, quantity: number) => {
     if (item.countInStock < quantity) {
       toast.warn("Sorry. Product is out of stock");
       return;
     }
-    dispatch(addToCart({...item,quantity}));
+    dispatch(addToCart({ ...item, quantity }));
   };
 
   const checkoutHandler = () => {
     navigate("/signin?redirect=/shipping");
   };
 
-  console.log('caritem',cartItems)
+  const removeItemHandler = (item: CartItem) => {
+    dispatch(CART_REMOVE_ITEM(item));
+  };
+
+  console.log("caritem", cartItems);
 
   return (
     <div>
@@ -75,7 +79,10 @@ export default function CartPage() {
                     </Col>
                     <Col md={3}>${item.price}</Col>
                     <Col md={2}>
-                      <Button variant={mode}>
+                      <Button
+                        variant={mode}
+                        onClick={() => removeItemHandler(item)}
+                      >
                         <i className="fas fa-trash"></i>
                       </Button>
                     </Col>

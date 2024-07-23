@@ -1,17 +1,30 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { Badge, Button, Container, Nav, Navbar } from "react-bootstrap";
+import {
+  Badge,
+  Button,
+  Container,
+  Nav,
+  Navbar,
+  NavDropdown,
+} from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { switchMode } from "./redux/slices/ThemeSlice";
 import { LinkContainer } from "react-router-bootstrap";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { userSignOut } from "./redux/slices/UserInfo";
 
 function App() {
   const [count, setCount] = useState(0);
+
   const { mode } = useSelector((state) => state.theme);
+
   const cart = useSelector((state) => state.cart.cart);
+
+  const userInfo = useSelector((state) => state.userInfo);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,6 +33,15 @@ function App() {
 
   const handleToggleTheme = () => {
     dispatch(switchMode());
+  };
+
+  const signoutHandler = () => {
+    dispatch(userSignOut());
+    localStorage.removeItem("userInfo");
+    // localStorage.removeItem('cartItems')
+    // localStorage.removeItem('shippingAddress')
+    // localStorage.removeItem('paymentMethod')
+    window.location.href = "/signin";
   };
 
   return (
@@ -43,9 +65,21 @@ function App() {
                 </Badge>
               )}
             </Link>
-            <a href="/signin" className="nav-link">
-              SignIn
-            </a>
+            {userInfo ? (
+              <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
+                <Link
+                  className="dropdown-item"
+                  to="#signout"
+                  onClick={signoutHandler}
+                >
+                  Sign Out
+                </Link>
+              </NavDropdown>
+            ) : (
+              <Link className="nav-link" to="/signin">
+                Sign In
+              </Link>
+            )}
           </Nav>
         </Navbar>
       </header>

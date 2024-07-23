@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import { ProductList } from "./data";
 import cors from "cors";
 import mongoose from "mongoose";
+import { productRouter } from "./routes/ProductRouter";
+import { userRouter } from "./routes/UserRouter";
+import { seedRouter } from "./routes/SeedRouter";
 
 dotenv.config();
 
@@ -28,6 +31,13 @@ app.use(
     origin: ["http://localhost:5173"],
   })
 );
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+app.use('/api/products', productRouter)
+app.use('/api/users', userRouter)
+app.use('/api/seed', seedRouter)
 
 app.get("/api/products", (req: Request, res: Response) => {
   res.json(ProductList);

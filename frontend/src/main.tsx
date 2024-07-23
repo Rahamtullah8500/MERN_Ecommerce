@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App.tsx";
 import "./index.css";
 import {
@@ -16,10 +15,7 @@ import { Provider } from "react-redux";
 import Store from "./redux/Store.tsx";
 import { HelmetProvider } from "react-helmet-async";
 import CartPage from './pages/cartPage/CartPage.tsx';
-
-// let process:NodeJS.Process
-
-// process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : '/'
+import SignInPage from "./pages/signInPage/SignInPage.tsx";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "development" ? "http://localhost:4000" : "/";
@@ -30,6 +26,7 @@ const router = createBrowserRouter(
       <Route index={true} element={<HomePage />} />
       <Route path="product/:slug" element={<ProductPage />} />
       <Route path="cart" element={<CartPage/>} />
+      <Route path="signin" element={<SignInPage />} />
     </Route>
   )
 );
