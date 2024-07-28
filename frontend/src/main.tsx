@@ -16,6 +16,7 @@ import Store from "./redux/Store.tsx";
 import { HelmetProvider } from "react-helmet-async";
 import CartPage from './pages/cartPage/CartPage.tsx';
 import SignInPage from "./pages/signInPage/SignInPage.tsx";
+import SignUpPage from "./pages/signUpPage/SignUpPage.tsx";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "development" ? "http://localhost:4000" : "/";
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
       <Route path="product/:slug" element={<ProductPage />} />
       <Route path="cart" element={<CartPage/>} />
       <Route path="signin" element={<SignInPage />} />
+      <Route path="signup" element={<SignUpPage/>} />
     </Route>
   )
 );

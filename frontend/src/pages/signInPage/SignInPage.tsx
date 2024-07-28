@@ -3,40 +3,47 @@ import { Button, Container, Form } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import LoadingBox from "../components/LoadingBox";
-import { useSigninMutation } from "../hooks/userHooks";
-import { Store } from "../Store";
-import { ApiError } from "../types/ApiError";
-import { getError } from "../utils";
+import LoadingBox from "../../components/loadingBox/LoadingBox";
+// import { useSigninMutation } from "../hooks/userHooks";
+// import { Store } from "../Store";
+import { ApiError } from "../../types/ApiError";
+import { getError } from "../../utils";
 import { userSignIn } from "../../redux/slices/UserInfo";
+import { useDispatch, useSelector } from "react-redux";
+import apiClient from "../../apiClient";
+import { UserInfo } from "../../types/UserInfo";
 
 export default function SignInPage() {
   const navigate = useNavigate();
   const { search } = useLocation();
   const redirectInUrl = new URLSearchParams(search).get("redirect");
   const redirect = redirectInUrl ? redirectInUrl : "/";
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
-
-  const { mutateAsync: signin, isLoading } = useSigninMutation();
+  // const { state, dispatch } = useContext(Store);
+  const { userInfo } = useSelector((state) => state.userInfo);
 
   const submitHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
-      const data = await signin({
+      const response = await apiClient.post<UserInfo>(`api/users/signin`, {
         email,
         password,
         type: "USER_SIGNIN",
       });
-      dispatch(userSignIn(data));
-      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      dispatch(userSignIn(response.data));
+      localStorage.setItem("userInfo", JSON.stringify(response.data));
       navigate(redirect);
     } catch (err) {
       toast.error(getError(err as ApiError));
+    } finally {
+      setIsLoading(false);
     }
   };
 

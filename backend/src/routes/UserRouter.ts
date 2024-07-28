@@ -1,12 +1,13 @@
 import express, { Request, Response } from 'express'
 import asyncHandler from 'express-async-handler'
 import bcrypt from 'bcryptjs'
-import { UserModel } from '../models/UserModel'
+import {User, UserModel } from '../models/UserModel'
 import { generateToken } from '../ustils'
 
 
 
 export const userRouter = express.Router()
+
 // POST /api/users/signin
 userRouter.post(
   '/signin',
@@ -25,5 +26,24 @@ userRouter.post(
       }
     }
     res.status(401).json({ message: 'Invalid email or password' })
+  })
+)
+
+userRouter.post(
+  '/signup',
+  asyncHandler(async (req: Request, res: Response) => {
+    const user = await UserModel.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password),
+    } as User)
+    
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: generateToken(user),
+    })
   })
 )

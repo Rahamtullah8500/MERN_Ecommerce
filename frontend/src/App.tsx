@@ -38,9 +38,9 @@ function App() {
   const signoutHandler = () => {
     dispatch(userSignOut());
     localStorage.removeItem("userInfo");
-    // localStorage.removeItem('cartItems')
-    // localStorage.removeItem('shippingAddress')
-    // localStorage.removeItem('paymentMethod')
+    localStorage.removeItem('cartItems')
+    localStorage.removeItem('shippingAddress')
+    localStorage.removeItem('paymentMethod')
     window.location.href = "/signin";
   };
 
@@ -52,35 +52,37 @@ function App() {
             <LinkContainer to="/">
               <Navbar.Brand>tsamazona</Navbar.Brand>
             </LinkContainer>
-          </Container>
-          <Nav>
-            <Button variant={mode} onClick={handleToggleTheme}>
-              <i className={mode === "light" ? "fa fa-sun" : "fa fa-moon"}></i>
-            </Button>
-            <Link to="/cart" className="nav-link">
-              Cart
-              {cart.cartItems.length > 0 && (
-                <Badge pill bg="danger">
-                  {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
-                </Badge>
-              )}
-            </Link>
-            {userInfo ? (
-              <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
-                <Link
-                  className="dropdown-item"
-                  to="#signout"
-                  onClick={signoutHandler}
-                >
-                  Sign Out
-                </Link>
-              </NavDropdown>
-            ) : (
-              <Link className="nav-link" to="/signin">
-                Sign In
+            <Nav>
+              <Button variant={mode} onClick={handleToggleTheme}>
+                <i
+                  className={mode === "light" ? "fa fa-sun" : "fa fa-moon"}
+                ></i>
+              </Button>
+              <Link to="/cart" className="nav-link">
+                Cart
+                {cart.cartItems.length > 0 && (
+                  <Badge pill bg="danger">
+                    {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
+                  </Badge>
+                )}
               </Link>
-            )}
-          </Nav>
+              {userInfo ? (
+                <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
+                  <Link
+                    className="dropdown-item"
+                    to="#signout"
+                    onClick={signoutHandler}
+                  >
+                    Sign Out
+                  </Link>
+                </NavDropdown>
+              ) : (
+                <Link className="nav-link" to="/signin">
+                  Sign In
+                </Link>
+              )}
+            </Nav>
+          </Container>
         </Navbar>
       </header>
       <main>
