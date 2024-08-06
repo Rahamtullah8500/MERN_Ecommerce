@@ -14,9 +14,16 @@ import axios from "axios";
 import { Provider } from "react-redux";
 import Store from "./redux/Store.tsx";
 import { HelmetProvider } from "react-helmet-async";
-import CartPage from './pages/cartPage/CartPage.tsx';
+import CartPage from "./pages/cartPage/CartPage.tsx";
 import SignInPage from "./pages/signInPage/SignInPage.tsx";
 import SignUpPage from "./pages/signUpPage/SignUpPage.tsx";
+import ShippingAddressPage from "./pages/shippingAddressPage/ShippingAddressPage.tsx";
+import PaymentMethodPage from "./pages/paymentMethodPage/PaymentMethodPage.tsx";
+import ProtectedRoute from "./components/protectedRoute/ProtectedRoute";
+import PlaceOrderPage from "./pages/placeOrderPage/PlaceOrderPage";
+import OrderPage from "./pages/orderPage/OrderPage.tsx";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import OrderHistoryPage from "./pages/orderHistoryPage/OrderHistoryPage.tsx";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "development" ? "http://localhost:4000" : "/";
@@ -26,9 +33,16 @@ const router = createBrowserRouter(
     <Route path="/" element={<App />}>
       <Route index={true} element={<HomePage />} />
       <Route path="product/:slug" element={<ProductPage />} />
-      <Route path="cart" element={<CartPage/>} />
+      <Route path="cart" element={<CartPage />} />
       <Route path="signin" element={<SignInPage />} />
-      <Route path="signup" element={<SignUpPage/>} />
+      <Route path="signup" element={<SignUpPage />} />
+      <Route path="" element={<ProtectedRoute />}>
+        <Route path="shipping" element={<ShippingAddressPage />} />
+        <Route path="payment" element={<PaymentMethodPage />} />
+        <Route path="placeorder" element={<PlaceOrderPage />} />
+        <Route path="/order/:id" element={<OrderPage />} />
+        <Route path="/orderhistory" element={<OrderHistoryPage />} />
+      </Route>
     </Route>
   )
 );
@@ -37,7 +51,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <HelmetProvider>
       <Provider store={Store}>
-        <RouterProvider router={router} />
+        <PayPalScriptProvider
+          options={{ "client-id": "sb" }}
+          deferLoading={true}
+        >
+          <RouterProvider router={router} />
+        </PayPalScriptProvider>
       </Provider>
     </HelmetProvider>
   </React.StrictMode>

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Cart, CartItem } from "../../types/CartType";
+import { Cart, CartItem, ShippingAddress } from "../../types/CartType";
 
 type AppState = {
   mode: string;
@@ -62,9 +62,38 @@ const CartSlice = createSlice({
 
       // return { ...state, cart: { ...state.cart, ...state.cart.cartItems } };
     },
+    saveShippingAddress: (state, action: { payload: ShippingAddress }) => {
+      state = {
+        ...state,
+        cart: {
+          ...state.cart,
+          shippingAddress: action.payload,
+        },
+      };
+    },
+    SAVE_PAYMENT_METHOD: (state, action) => {
+      state = {
+        ...state,
+        cart: {
+          ...state.cart,
+          paymentMethod: action.payload,
+        },
+      };
+    },
+    CART_CLEAR: (state) => {
+      state.cart.cartItems = [];
+      // return{...state,cart:{...state.cart,cartItems:[]}}
+    },
   },
 });
 
-export const { switchMode, addToCart,CART_REMOVE_ITEM } = CartSlice.actions;
+export const {
+  switchMode,
+  addToCart,
+  CART_REMOVE_ITEM,
+  saveShippingAddress,
+  SAVE_PAYMENT_METHOD,
+  CART_CLEAR
+} = CartSlice.actions;
 
 export default CartSlice.reducer;

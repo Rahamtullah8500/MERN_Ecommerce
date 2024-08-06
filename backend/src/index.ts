@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 import { productRouter } from "./routes/ProductRouter";
 import { userRouter } from "./routes/UserRouter";
 import { seedRouter } from "./routes/SeedRouter";
+import { orderRouter } from './routes/OrderRouter';
+import { keyRouter } from './routes/KeyRouter';
 
 dotenv.config();
 
@@ -38,6 +40,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/api/products', productRouter)
 app.use('/api/users', userRouter)
 app.use('/api/seed', seedRouter)
+app.use('/api/orders', orderRouter)
+app.use('/api/keys', keyRouter)
 
 app.get("/api/products", (req: Request, res: Response) => {
   res.json(ProductList);
