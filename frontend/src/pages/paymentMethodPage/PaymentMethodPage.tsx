@@ -1,17 +1,18 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import CheckoutSteps from "../../components/checkOutSteps/CheckOutSteps";
 import { useDispatch, useSelector } from "react-redux";
 import { SAVE_PAYMENT_METHOD } from "../../redux/slices/CartSlice";
+import { RootState } from "../../redux/Store";
 
 export default function PaymentMethodPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const paymentMethod = useSelector((state) => state.cart.cart.paymentMethod);
-  const shippingAddress = useSelector((state) => state.cart.cart.shippingAddress);
+  const paymentMethod = useSelector((state:RootState) => state.cart.cart.paymentMethod);
+  const shippingAddress = useSelector((state:RootState) => state.cart.cart.shippingAddress);
 
   const [paymentMethodName, setPaymentMethodName] = useState(
     paymentMethod || "PayPal"

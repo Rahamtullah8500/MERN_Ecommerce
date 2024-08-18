@@ -24,6 +24,7 @@ import PlaceOrderPage from "./pages/placeOrderPage/PlaceOrderPage";
 import OrderPage from "./pages/orderPage/OrderPage.tsx";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import OrderHistoryPage from "./pages/orderHistoryPage/OrderHistoryPage.tsx";
+import NotFoundPage from "./pages/notFound/NotFound.tsx";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "development" ? "http://localhost:4000" : "/";
@@ -38,17 +39,17 @@ const router = createBrowserRouter(
       <Route path="signup" element={<SignUpPage />} />
       <Route path="" element={<ProtectedRoute />}>
         <Route path="shipping" element={<ShippingAddressPage />} />
-        <Route path="payment" element={<PaymentMethodPage />} />
+        <Route path="/payment" element={<PaymentMethodPage />} />
         <Route path="placeorder" element={<PlaceOrderPage />} />
         <Route path="/order/:id" element={<OrderPage />} />
         <Route path="/orderhistory" element={<OrderHistoryPage />} />
       </Route>
+      <Route path='*' element={<NotFoundPage/>}/>
     </Route>
   )
 );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
     <HelmetProvider>
       <Provider store={Store}>
         <PayPalScriptProvider
@@ -59,5 +60,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </PayPalScriptProvider>
       </Provider>
     </HelmetProvider>
-  </React.StrictMode>
 );

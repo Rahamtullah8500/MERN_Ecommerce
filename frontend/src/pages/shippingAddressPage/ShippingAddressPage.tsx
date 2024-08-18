@@ -5,12 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import CheckoutSteps from "../../components/checkOutSteps/CheckOutSteps";
 import { saveShippingAddress } from "../../redux/slices/CartSlice";
+import { RootState } from "../../redux/Store";
 
 export default function ShippingAddressPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.userInfo.userInfo);
-  const shippingAddress = useSelector((state) => state.cart);
+  const userInfo = useSelector((state: RootState) => state.userInfo.userInfo);
+  const shippingAddress = useSelector((state: RootState) => state.cart.cart.shippingAddress);
 
   useEffect(() => {
     if (!userInfo) {

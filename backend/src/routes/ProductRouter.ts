@@ -1,7 +1,7 @@
 import express from "express";
 import { ProductModel } from "../models/ProductModel";
 import expressAsyncHandler from "express-async-handler";
-// import asyncHandler  from 'express-async-asyncHandler';
+import asyncHandler from "express-async-handler";
 
 export const productRouter = express.Router();
 // /api/prodcuts
@@ -23,5 +23,13 @@ productRouter.get(
     } else {
       res.status(404).json({ message: "Product Not Found" });
     }
+  })
+);
+
+productRouter.get(
+  "/categories",
+  expressAsyncHandler(async (req, res) => {
+    const categories = await ProductModel.find().distinct("category");
+    res.json(categories);
   })
 );

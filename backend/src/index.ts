@@ -8,6 +8,7 @@ import { userRouter } from "./routes/UserRouter";
 import { seedRouter } from "./routes/SeedRouter";
 import { orderRouter } from './routes/OrderRouter';
 import { keyRouter } from './routes/KeyRouter';
+import path from 'path'
 
 dotenv.config();
 
@@ -50,6 +51,14 @@ app.get("/api/products", (req: Request, res: Response) => {
 app.get("/api/products/:slug", (req: Request, res: Response) => {
   res.json(ProductList.find((item) => item.slug === req.params.slug));
 });
+
+
+app.use(express.static(path.join(__dirname, '../../frontend/dist')))
+app.get('*', (req: Request, res: Response) =>
+  res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'))
+)
+
+const PORT: number = parseInt((process.env.PORT || '4000') as string, 10)
 
 app.listen(port, () => {
   console.log(`server running at localhost:${port}`);

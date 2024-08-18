@@ -1,17 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import LoadingBox from "../../components/loadingBox/LoadingBox";
-// import { useSigninMutation } from "../hooks/userHooks";
-// import { Store } from "../Store";
 import { ApiError } from "../../types/ApiError";
 import { getError } from "../../utils";
 import { userSignIn } from "../../redux/slices/UserInfo";
 import { useDispatch, useSelector } from "react-redux";
 import apiClient from "../../apiClient";
 import { UserInfo } from "../../types/UserInfo";
+import { RootState } from "../../redux/Store";
 
 export default function SignInPage() {
   const navigate = useNavigate();
@@ -24,8 +23,13 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // const { state, dispatch } = useContext(Store);
-  const { userInfo } = useSelector((state) => state.userInfo);
+  const { userInfo } = useSelector((state:RootState) => state.userInfo);
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate(redirect);
+    }
+  }, [navigate, redirect, userInfo]);
 
   const submitHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -46,12 +50,6 @@ export default function SignInPage() {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (userInfo) {
-      navigate(redirect);
-    }
-  }, [navigate, redirect, userInfo]);
 
   return (
     <Container className="small-container">

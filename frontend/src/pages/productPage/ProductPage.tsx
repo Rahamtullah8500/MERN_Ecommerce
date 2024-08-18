@@ -1,6 +1,6 @@
 import { Badge, Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import Rating from "../../components/rating/Rating";
 import { useEffect, useState } from "react";
@@ -9,19 +9,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/slices/CartSlice";
 import { CartItem } from "../../types/CartType";
 import { toast } from "react-toastify";
+import { RootState } from "../../redux/Store";
+import { Product } from "../../types/Product";
 
 export default function ProductPage() {
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState<Product>();
   const params = useParams();
   const { slug } = params;
   const dispatch = useDispatch();
-  const cartData = useSelector((state) => state.cart);
-  const cartItems = cartData.cart.cartItems
-  const navigate = useNavigate()
-
+  const cartData = useSelector((state: RootState) => state.cart);
+  const cartItems = cartData.cart.cartItems;
+  // const navigate = useNavigate()
 
   useEffect(() => {
-    handleFetchSelectedProduct(slug);
+    slug && handleFetchSelectedProduct(slug);
   }, []);
 
   const handleFetchSelectedProduct = async (slug: string) => {
@@ -33,7 +34,7 @@ export default function ProductPage() {
     }
   };
 
-  const addToCartHandler = (item:CartItem) => {
+  const addToCartHandler = (item: CartItem) => {
     const existItem = cartItems.find((x) => x._id === item._id);
 
     const quantity = existItem ? existItem.quantity + 1 : 1;
@@ -41,14 +42,14 @@ export default function ProductPage() {
       alert("Sorry. Product is out of stock");
       return;
     }
-    dispatch(addToCart({...item,quantity}));
-    toast.success('Product added to the cart')
+    dispatch(addToCart({ ...item, quantity }));
+    toast.success("Product added to the cart");
     // navigate('/cart')
   };
 
-  console.log('cart items',cartItems)
+  console.log("cart items", cartItems);
 
-  return product !== null ? (
+  return product !== null && product ? (
     <div>
       <Row>
         <Col md={6}>

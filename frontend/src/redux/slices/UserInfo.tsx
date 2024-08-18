@@ -32,6 +32,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from '../../apiClient'; // Adjust the import based on your project structure
 import { UserInfo } from "../../types/UserInfo"; // Adjust the import based on your project structure
+import axios from "axios";
 
 // Define initial state
 type UserState = {
@@ -48,15 +49,32 @@ const initialState: UserState = {
   error: null,
 };
 
+// // Async thunk for user signup
+// export const signupUser = createAsyncThunk(
+//   'user/signup',
+//   async ({ name, email, password }: { name: string; email: string; password: string; }, { rejectWithValue }) => {
+//     try {
+//       const response = await apiClient.post<UserInfo>('/api/users/signup', { name, email, password });
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response.data.message || 'Signup failed');
+//     }
+//   }
+// );
+
 // Async thunk for user signup
-export const signupUser = createAsyncThunk(
+export const signupUser = createAsyncThunk<UserInfo, { name: string; email: string; password: string }, { rejectValue: string }>(
   'user/signup',
-  async ({ name, email, password }: { name: string; email: string; password: string; }, { rejectWithValue }) => {
+  async ({ name, email, password }, { rejectWithValue }) => {
     try {
       const response = await apiClient.post<UserInfo>('/api/users/signup', { name, email, password });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message || 'Signup failed');
+      // Check if error is an AxiosError
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data?.message || 'Signup failed');
+      }
+      return rejectWithValue('Signup failed'); // Fallback if error is not AxiosError
     }
   }
 );

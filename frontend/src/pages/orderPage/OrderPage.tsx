@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
@@ -8,25 +8,18 @@ import { getError } from "../../utils";
 import MessageBox from "./../../components/messageBox/MessageBox";
 import apiClient from "../../apiClient";
 import { Order } from "../../types/Order";
-import LoadingBox from "./../../components/loadingBox/LoadingBox";
-import {
-  PayPalButtons,
-  PayPalButtonsComponentProps,
-  SCRIPT_LOADING_STATE,
-  usePayPalScriptReducer,
-} from "@paypal/react-paypal-js";
+import LoadingBox from "../../components/loadingBox/LoadingBox";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from "react-toastify";
 
 export default function OrderPage() {
   const params = useParams();
   const { id: orderId } = params;
 
-  const [order, setOrder] = useState<Order>(null);
+  const [order, setOrder] = useState<Order>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [paypalConfig, setPaypalConfig] = useState<{ clientId: string } | null>(
-    null
-  );
+  // const [paypalConfig, setPaypalConfig] = useState<{ clientId: string } | null>( null);
   const [loadingPay, setLoadingPay] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
@@ -41,7 +34,7 @@ export default function OrderPage() {
       const response = await apiClient.get(`api/orders/${orderId}`);
       setOrder(response.data);
     } catch (err) {
-      setError(err);
+      setError(err as SetStateAction<null>);
     } finally {
       setIsLoading(false);
     }
@@ -53,7 +46,7 @@ export default function OrderPage() {
       const response = await apiClient.get<{ clientId: string }>(
         `/api/keys/paypal`
       );
-      setPaypalConfig(response.data);
+      // setPaypalConfig(response.data);
       // Load PayPal script
       if (response.data.clientId) {
         // paypalDispatch({
@@ -74,25 +67,29 @@ export default function OrderPage() {
   };
 
   // Function to pay for an order
-  const payOrder = async (details: { orderId: string }) => {
+  const payOrder = async (details: { orderId: string | undefined }) => {
     setLoadingPay(true);
     try {
       const response = await apiClient.put<{ message: string; order: Order }>(
         `api/orders/${details.orderId}/pay`,
         details
       );
+      console.log('payorder res',response)
       toast.success("Order is paid successfully");
+      setIsPending(false)
       await fetchOrderDetails(); // Refetch order details after payment
     } catch (err) {
       toast.error("Error paying for the order");
+      setIsRejected(true)
     } finally {
       setLoadingPay(false);
     }
   };
 
   const paypalbuttonTransactionProps = {
-    style: { layout: "vertical" },
+    style: { layout: "vertical" as "horizontal" | "vertical" }, 
     createOrder(data: any, actions: any) {
+      console.log('create order data',data)
       return actions.order.create({
         purchase_units: [
           {
@@ -104,14 +101,17 @@ export default function OrderPage() {
       });
     },
     onApprove(data: any, actions: any) {
-      return actions.order.capture().then(async (details: any) => {
+      console.log('on approve',data)
+      return actions.order.capture().then(async () => {
         await payOrder({ orderId });
       });
     },
-    onError: (err: any) => {
-      toast.error("Error in PayPal transaction");
+    onError: (err:object) => {
+      toast.error("Error in PayPal transaction",err);
     },
   };
+
+  console.log('order',order)
 
   return isLoading ? (
     <LoadingBox></LoadingBox>
@@ -231,7 +231,7 @@ export default function OrderPage() {
                       </MessageBox>
                     ) : (
                       <div>
-                        <PayPalButtons {...paypalbuttonTransactionProps} />
+                        <PayPalButtons {...paypalbuttonTransactionProps} ></PayPalButtons>
                         <Button onClick={() => payOrder({ orderId })}>
                           Test Pay
                         </Button>

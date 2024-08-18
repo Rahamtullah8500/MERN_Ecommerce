@@ -10,15 +10,17 @@ import CheckoutSteps from "./../../components/checkOutSteps/CheckOutSteps";
 import { CART_CLEAR } from "../../redux/slices/CartSlice";
 import apiClient from "../../apiClient";
 import { Order } from "../../types/Order";
+import { RootState } from "../../redux/Store";
+import LoadingBox from "../../components/loadingBox/LoadingBox";
 
 export default function PlaceOrderPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+  // const [error, setError] = useState(null);
+  // const [data, setData] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.cart);
+  const cart = useSelector((state: RootState) => state.cart.cart);
 
   console.log("cart", cart);
 
@@ -31,11 +33,13 @@ export default function PlaceOrderPage() {
   const round2 = (num: number) => Math.round(num * 100 + Number.EPSILON) / 100;
 
   const itemsPrice = round2(
-    cart.cartItems.reduce((a, c) => a + c.quantity * c.price, 0)
+    cart.cartItems.reduce((a, c) => a + c.quantity * c.price, 1)
   );
   const shippingPrice = cart.itemsPrice > 100 ? round2(0) : round2(10);
-  const taxPrice = round2(0.15 * cart.itemsPrice);
-  const totalPrice = cart.itemsPrice + cart.shippingPrice + cart.taxPrice;
+  const taxPrice = round2(0.15 * itemsPrice);
+  const totalPrice = itemsPrice + shippingPrice + taxPrice;
+
+  console.log('items price',itemsPrice)
 
   const handleCreateOrder = async () => {
     const order = {
@@ -49,7 +53,7 @@ export default function PlaceOrderPage() {
     };
 
     setIsLoading(true);
-    setError(null);
+    // setError(null);
 
     try {
       const response = await apiClient.post<{ message: string; order: Order }>(
@@ -59,7 +63,8 @@ export default function PlaceOrderPage() {
       return response.data;
       // setData(response.data.order);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("err in place order page", err);
+      // setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false); // Reset loading state
     }
@@ -70,7 +75,7 @@ export default function PlaceOrderPage() {
       const data = await handleCreateOrder();
       dispatch(CART_CLEAR());
       localStorage.removeItem("cartItems");
-      navigate(`/order/${data.order._id}`);
+      navigate(`/order/${data?.order._id}`);
     } catch (err) {
       toast.error(getError(err as ApiError));
     }
@@ -143,19 +148,19 @@ export default function PlaceOrderPage() {
                 <ListGroup.Item>
                   <Row>
                     <Col>Items</Col>
-                    <Col>${cart.itemsPrice.toFixed(2)}</Col>
+                    <Col>${itemsPrice.toFixed(2)}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Shipping</Col>
-                    <Col>${cart.shippingPrice.toFixed(2)}</Col>
+                    <Col>${shippingPrice.toFixed(2)}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Tax</Col>
-                    <Col>${cart.taxPrice.toFixed(2)}</Col>
+                    <Col>${taxPrice.toFixed(2)}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -164,7 +169,7 @@ export default function PlaceOrderPage() {
                       <strong> Order Total</strong>
                     </Col>
                     <Col>
-                      <strong>${cart.totalPrice.toFixed(2)}</strong>
+                      <strong>${totalPrice.toFixed(2)}</strong>
                     </Col>
                   </Row>
                 </ListGroup.Item>

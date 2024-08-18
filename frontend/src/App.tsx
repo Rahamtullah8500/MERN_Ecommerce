@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import {
-  Badge,
   Button,
   Container,
   ListGroup,
@@ -17,22 +16,34 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { userSignOut } from "./redux/slices/UserInfo";
 import apiClient from "./apiClient";
-import LoadingBox from './components/loadingBox/LoadingBox';
+import LoadingBox from "./components/loadingBox/LoadingBox";
 import MessageBox from "./components/messageBox/MessageBox";
 import { getError } from "./utils";
 import { ApiError } from "./types/ApiError";
 import SearchBox from "./components/searchBox/SearchBox";
 
+interface RootState {
+  theme: {
+    mode: string;
+  };
+  cart: {
+    cart: { cartItems: [{ quantity: number }] };
+  };
+  userInfo: {
+    userInfo: { name: string };
+  };
+}
+
 function App() {
-  const [count, setCount] = useState(0);
+  // const [count, setCount] = useState(0);
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>("");
 
-  const { mode } = useSelector((state) => state.theme);
-  const cart = useSelector((state) => state.cart.cart);
-  const userInfo = useSelector((state) => state.userInfo);
+  const { mode } = useSelector((state: RootState) => state.theme);
+  const cart = useSelector((state: RootState) => state.cart.cart);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
 
   const dispatch = useDispatch();
 
@@ -62,14 +73,11 @@ function App() {
   const signoutHandler = () => {
     dispatch(userSignOut());
     localStorage.removeItem("userInfo");
-    // localStorage.removeItem("cartItems");
-    // localStorage.removeItem("shippingAddress");
-    // localStorage.removeItem("paymentMethod");
-    window.location.href = "/signin";
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("shippingAddress");
+    localStorage.removeItem("paymentMethod");
+    window.location.href = "signin";
   };
-
-  console.log('categ',userInfo)
-
 
   return (
     <div className=" d-flex flex-column h-full ">
@@ -99,10 +107,10 @@ function App() {
                   {mode === "light" ? "Light" : "Dark"}
                 </Link>
 
-                {userInfo ? (
+                {userInfo.userInfo ? (
                   <NavDropdown
                     className="header-link"
-                    title={`Hello, ${userInfo.name}`}
+                    title={`Hello, ${userInfo.userInfo?.name}`}
                   >
                     <LinkContainer to="/profile">
                       <NavDropdown.Item>User Profile</NavDropdown.Item>
@@ -193,7 +201,9 @@ function App() {
               onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
             >
               <span>
-                {userInfo ? `Hello, ${userInfo.userInfo.name}` : `Hello, sign in`}
+                {userInfo
+                  ? `Hello, ${userInfo?.userInfo?.name}`
+                  : `Hello, sign in`}
               </span>
             </LinkContainer>
           </ListGroup.Item>
@@ -215,7 +225,8 @@ function App() {
               {getError(error as ApiError)}
             </MessageBox>
           ) : (
-            categories && categories.map((category) => (
+            categories &&
+            categories.map((category) => (
               <ListGroup.Item action key={category}>
                 <LinkContainer
                   to={{ pathname: "/search", search: `category=${category}` }}

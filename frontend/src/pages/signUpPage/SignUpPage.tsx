@@ -1,32 +1,28 @@
 // SignupComponent.js
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useNavigate,
-  Link,
-  useLocation,
-} from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { signupUser, userSignIn } from "../../redux/slices/UserInfo";
 import { Button, Container, Form } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
+import { AppDispatch, RootState } from "../../redux/Store";
 
 const SignupComponent = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const search = useLocation();
+  const search = useLocation().search;
   const redirectInUrl = new URLSearchParams(search).get("redirect");
   const redirect = redirectInUrl ? redirectInUrl : "/";
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const userInfo = useSelector((state) => state.userInfo);
-  const loading = userInfo.loading;
-  const error = userInfo.error;
-
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+  // const loading = userInfo.loading;
+  // const error = userInfo.error;
 
   useEffect(() => {
     if (userInfo.userInfo) {
@@ -42,8 +38,11 @@ const SignupComponent = () => {
     }
     try {
       const data = dispatch(signupUser({ name, email, password }));
-      dispatch(userSignIn(data)); // Dispatch userSignIn action
-      navigate(redirect);
+      if (signupUser.fulfilled.match(data)) {
+        const userInfo = data.payload;
+        dispatch(userSignIn(userInfo));
+        navigate(redirect);
+      }
     } catch (err) {
       console.log("err in signup", err);
       toast.error("Signup failed");

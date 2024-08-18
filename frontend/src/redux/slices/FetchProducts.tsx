@@ -13,9 +13,15 @@ export const handleFetchProducts = createAsyncThunk(
   }
 );
 
-const initialState = {
+interface ProductState {
+  products: [];
+  status: "idle" | "loading" | "succeed" | "failed";
+  error: string | null; 
+}
+
+const initialState: ProductState = {
+  products: [],
   status: "idle",
-  products: null,
   error: null,
 };
 
@@ -29,12 +35,12 @@ const FetchProducts = createSlice({
         state.status = "loading";
       })
       .addCase(handleFetchProducts.fulfilled, (state, action) => {
-        state.status = "succeed",
-          state.products = action.payload,
-          state.error = null;
+        (state.status = "succeed"),
+          (state.products = action.payload),
+          (state.error = null);
       })
       .addCase(handleFetchProducts.rejected, (state, action) => {
-        (state.status = "failed"), (state.error = action.error.message);
+        (state.status = "failed"), (state.error = action.error.message || null);
       });
   },
 });

@@ -1,8 +1,7 @@
 import { Button } from 'react-bootstrap'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
-// import { useGetOrderHistoryQuery } from '../hooks/orderHooks'
-import LoadingBox from './../../components/loadingBox/LoadingBox';
+import LoadingBox from '../../components/loadingBox/LoadingBox';
 import MessageBox from './../../components/messageBox/MessageBox';
 import { getError } from '../../utils';
 import { ApiError } from '../../types/ApiError';
@@ -36,9 +35,6 @@ export default function OrderHistoryPage() {
     }
   };
 
-  console.log('orders',orders)
-
-
 
   return (
     <div>
@@ -50,7 +46,7 @@ export default function OrderHistoryPage() {
       {isLoading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
-        <MessageBox variant="danger">{getError(error as ApiError)}</MessageBox>
+        <MessageBox variant="danger">{getError(error as unknown as ApiError)}</MessageBox>
       ) : (
         <table className="table">
           <thead>

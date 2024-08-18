@@ -7,10 +7,23 @@ import { CartItem } from "../../types/CartType";
 import MessageBox from "../../components/messageBox/MessageBox";
 import { addToCart, CART_REMOVE_ITEM } from "../../redux/slices/CartSlice";
 
+interface rootState {
+  theme: {
+    mode: "";
+  };
+  cart: {
+    cart: {
+      cartItems: CartItem[];
+    };
+  };
+}
+
 export default function CartPage() {
   const navigate = useNavigate();
-  const { mode } = useSelector((state) => state.theme);
-  const cartItems = useSelector((state) => state.cart.cart.cartItems);
+  const { mode } = useSelector((state: rootState) => state.theme);
+  const cartItems = useSelector(
+    (state: rootState) => state.cart.cart.cartItems
+  );
   const dispatch = useDispatch();
 
   const updateCartHandler = (item: CartItem, quantity: number) => {
@@ -28,8 +41,6 @@ export default function CartPage() {
   const removeItemHandler = (item: CartItem) => {
     dispatch(CART_REMOVE_ITEM(item));
   };
-
-  console.log("caritem", cartItems);
 
   return (
     <div>

@@ -8,21 +8,21 @@ import { convertProductToCartItem } from "../../utils";
 import { toast } from "react-toastify";
 import { CartItem } from "../../types/CartType";
 
+interface rootState {
+  cart: {
+    cart: {
+      cartItems:[{_id:'',quantity:number}]
+    };
+  };
+}
+
 function ProductItem({ product }: { product: Product }) {
   const dispatch = useDispatch();
-  const cartData = useSelector((state) => state.cart);
+  const cartData = useSelector((state: rootState) => state.cart);
 
-  const cartItems = cartData.cart.cartItems
+  const cartItems = cartData.cart.cartItems;
 
-  // const handleFetchSelectedProduct = async (slug: string) => {
-  //   try {
-  //     let response = await axios.get(`api/products/${slug}`);
-  //   } catch (err) {
-  //     console.log("err", err);
-  //   }
-  // };
-
-  const addToCartHandler = (item:CartItem) => {
+  const addToCartHandler = (item: CartItem) => {
     const existItem = cartItems.find((x) => x._id === item._id);
 
     const quantity = existItem ? existItem.quantity + 1 : 1;
@@ -30,8 +30,8 @@ function ProductItem({ product }: { product: Product }) {
       alert("Sorry. Product is out of stock");
       return;
     }
-    dispatch(addToCart({...item,quantity}));
-    toast.success('Product added to the cart')
+    dispatch(addToCart({ ...item, quantity }));
+    toast.success("Product added to the cart");
   };
 
   return (
